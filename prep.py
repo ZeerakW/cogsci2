@@ -12,10 +12,11 @@ from PIL import Image
 """
 DONE
 1. Extract canny features from training set (either human OR drawn) 
+2. Add labels to data
 
 TODO
 0. Resize all images to same size
-1. Add labels to data
+1. 
 2. Feed features to classifier(s) - Classifiers: KNearest, SVM, LogisticRegression, k_means
 3. Predict on the test set
 """
@@ -27,10 +28,8 @@ def get_features(img, sigma):
     """
 
     img = ndimage.gaussian_filter(img, 4)
-    feats = canny(img, sigma)
-    # TODO Add label
 
-    return 
+    return canny(img, sigma)
 
 def get_prediction(clf, train, test):
     # TODO Crossvalidate here
@@ -43,32 +42,35 @@ def main():
     peace_h  = glob(os.getcwd() + '/data/peace/human/*.jpg')
     peace_d  = glob(os.getcwd() + '/data/peace/Drawn/*.jpg')
 
-    # TODO Read images
-    humans_t = [[np.array(Image.open(thumbs).convert('L'), 'f'), 1] for thumbs in thumbs_h]
-    humans_p = [[np.array(Image.open(peace).convert('L'), 'f'), 1] for peace in peace_h]
-    drawn_t  = [[np.array(Image.open(thumbs).convert('L'), 'f'), 0] for thumbs in thumbs_d]
-    drawn_p  = [[np.array(Image.open(peace).convert('L'), 'f'), 0] for peace in peace_d]
+    """
+    Data structure:
+    print humans accesses array of all images
+    print humans[i] accesses array of single image and label
+    print humans[i][0] accesses image
+    print humans[i][1] accesses label
+    """
+    humans_t = np.array([[np.array(Image.open(thumbs).convert('L'), 'f'), 1] for thumbs in thumbs_h])
+    humans_p = np.array([[np.array(Image.open(peace).convert('L'), 'f'), 1] for peace in peace_h])
+    drawn_t  = np.array([[np.array(Image.open(thumbs).convert('L'), 'f'), 0] for thumbs in thumbs_d])
+    drawn_p  = np.array([[np.array(Image.open(peace).convert('L'), 'f'), 0] for peace in peace_d])
+    
+    # Stack all human and drawn images
+    humans = np.vstack((humans_t, humans_p))
+    drawings = np.vstack((drawn_t, drawn_p))
 
-    humans = []   
-    print humans_t.extend(humans_p)
-    drawn = np.array(drawn_t.extend(drawn_p))
+    # Get features and labels 
+    h_feats = []
+    h_labels = []
 
-    print humans_t
-    print np.array(humans).shape
+    d_feats = []
+    d_labels = []
 
-    # thumbs_h_feats = []
-    # thumbs_d_feats = []
-    # peace_h_feats  = []
-    # peace_d_feats  = []
-    # for i in range(len(thumbs_h)):
-    #     thumbs_h_feats.append(get_features(thumbs_h[i], 3))
-    #     peace_h_feats.append(get_features(peace_h[i], 3))
-    #     thumbs_d_feats.append(get_features(thumbs_d[i], 3))
-    #     peace_d_feats.append(get_features(peace_d[i], 3))
+    for i in range(40):
+        h_feats.append(get_features(humans[i][0]), sigma=3)
+        h_labels.append(humans[i][1])
+        d_feats.append(get_features(drawings[i][0]), sigma=3)
+        d_labels.append(drawings[i][1])
 
-    # drawn_feats = thumbs_d_feats.extend(peace_d_feats)
-    # human_feats = thumbs_h_feats.extend(peace_h_feats)
-        
     # classifiers = [KNeighborsClassifier(), SVC(), LogisticRegression()] 
     
     # predictions = []
