@@ -13,6 +13,7 @@ DONE
 
 TODO
 0. Resize all images to same size
+1. Add labels to data
 2. Feed features to classifier(s) - Classifiers: KNearest, SVM, LogisticRegression, k_means
 3. Predict on the test set
 4. Add labels
@@ -47,6 +48,8 @@ def main():
         peace_h_feats.append(get_features(peace_h[i], 3))
         thumbs_d_feats.append(get_features(thumbs_d[i], 3))
         peace_d_feats.append(get_features(peace_d[i], 3))
+
+    drawn_feats = thumbs_d_feats.extend(peace_d_feats)
         
     classifiers = [KNeighborsClassifier(), SVC(), LogisticRegression()] 
     
