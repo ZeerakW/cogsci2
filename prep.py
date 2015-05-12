@@ -15,6 +15,7 @@ TODO
 0. Resize all images to same size
 2. Feed features to classifier(s) - Classifiers: KNearest, SVM, LogisticRegression, k_means
 3. Predict on the test set
+4. Add labels
 """
 
 def get_features(img, sigma):
@@ -52,5 +53,4 @@ def main():
     predictions = []
     for clf in classifiers:
         get_prediction(clf, thumbs_h_feats, )
-
 
