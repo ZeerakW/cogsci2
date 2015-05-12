@@ -36,7 +36,7 @@ def main():
     thumbs_h = glob(os.getcwd() + '/data/thumbs_up/human/')
     thumbs_d = glob(os.getcwd() + '/data/thumbs_up/Drawn/')
     peace_h  = glob(os.getcwd() + '/data/peace/human/')
-    peace_h  = glob(os.getcwd() + '/data/peace/Drawn/')
+    peace_d  = glob(os.getcwd() + '/data/peace/Drawn/')
     
     thumbs_h_feats = []
     thumbs_d_feats = []
