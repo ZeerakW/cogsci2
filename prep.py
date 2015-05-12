@@ -1,6 +1,7 @@
-from skimage.features import canny
+from skimage.feature import canny
 from scipy import ndimage
 from glob import glob
+import numpy as np
 import os
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
@@ -37,17 +38,23 @@ def get_prediction(clf, train, test):
     return clf.predict(test)
 
 def main():
-    thumbs_h = glob(os.getcwd() + '/data/thumbs_up/human/')
-    thumbs_d = glob(os.getcwd() + '/data/thumbs_up/Drawn/')
-    peace_h  = glob(os.getcwd() + '/data/peace/human/')
-    peace_d  = glob(os.getcwd() + '/data/peace/Drawn/')
+    thumbs_h = glob(os.getcwd() + '/data/thumbs_up/human/*.jpg')
+    thumbs_d = glob(os.getcwd() + '/data/thumbs_up/Drawn/*.jpg')
+    peace_h  = glob(os.getcwd() + '/data/peace/human/*.jpg')
+    peace_d  = glob(os.getcwd() + '/data/peace/Drawn/*.jpg')
 
     # TODO Read images
-    humans = np.zeros(256,257)
-    for i in range(len(thumbs_h)):
-        tmp = np.array([np.array(Image.open(thumbs_h[i]).convert('L'), 'f'), 1])
+    humans_t = [[np.array(Image.open(thumbs).convert('L'), 'f'), 1] for thumbs in thumbs_h]
+    humans_p = [[np.array(Image.open(peace).convert('L'), 'f'), 1] for peace in peace_h]
+    drawn_t  = [[np.array(Image.open(thumbs).convert('L'), 'f'), 0] for thumbs in thumbs_d]
+    drawn_p  = [[np.array(Image.open(peace).convert('L'), 'f'), 0] for peace in peace_d]
 
+    humans = []   
+    print humans_t.extend(humans_p)
+    drawn = np.array(drawn_t.extend(drawn_p))
 
+    print humans_t
+    print np.array(humans).shape
 
     # thumbs_h_feats = []
     # thumbs_d_feats = []
@@ -59,12 +66,13 @@ def main():
     #     thumbs_d_feats.append(get_features(thumbs_d[i], 3))
     #     peace_d_feats.append(get_features(peace_d[i], 3))
 
-    drawn_feats = thumbs_d_feats.extend(peace_d_feats)
-    human_feats = thumbs_h_feats.extend(peace_h_feats)
+    # drawn_feats = thumbs_d_feats.extend(peace_d_feats)
+    # human_feats = thumbs_h_feats.extend(peace_h_feats)
         
-    classifiers = [KNeighborsClassifier(), SVC(), LogisticRegression()] 
+    # classifiers = [KNeighborsClassifier(), SVC(), LogisticRegression()] 
     
-    predictions = []
-    for clf in classifiers:
-        get_prediction(clf, thumbs_h_feats, )
+    # predictions = []
+    # for clf in classifiers:
+    #     get_prediction(clf, thumbs_h_feats, )
 
+main()
