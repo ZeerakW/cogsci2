@@ -6,6 +6,7 @@ from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.cluster import k_means
+from PIL import Image
 
 """
 DONE
@@ -16,7 +17,6 @@ TODO
 1. Add labels to data
 2. Feed features to classifier(s) - Classifiers: KNearest, SVM, LogisticRegression, k_means
 3. Predict on the test set
-4. Add labels
 """
 
 def get_features(img, sigma):
@@ -26,10 +26,13 @@ def get_features(img, sigma):
     """
 
     img = ndimage.gaussian_filter(img, 4)
+    feats = canny(img, sigma)
+    # TODO Add label
 
-    return canny(img, sigma)
+    return 
 
 def get_prediction(clf, train, test):
+    # TODO Crossvalidate here
     clf.fit(train)
     return clf.predict(test)
 
@@ -38,18 +41,26 @@ def main():
     thumbs_d = glob(os.getcwd() + '/data/thumbs_up/Drawn/')
     peace_h  = glob(os.getcwd() + '/data/peace/human/')
     peace_d  = glob(os.getcwd() + '/data/peace/Drawn/')
-    
-    thumbs_h_feats = []
-    thumbs_d_feats = []
-    peace_h_feats  = []
-    peace_d_feats  = []
+
+    # TODO Read images
+    humans = np.zeros(256,257)
     for i in range(len(thumbs_h)):
-        thumbs_h_feats.append(get_features(thumbs_h[i], 3))
-        peace_h_feats.append(get_features(peace_h[i], 3))
-        thumbs_d_feats.append(get_features(thumbs_d[i], 3))
-        peace_d_feats.append(get_features(peace_d[i], 3))
+        tmp = np.array([np.array(Image.open(thumbs_h[i]).convert('L'), 'f'), 1])
+
+
+
+    # thumbs_h_feats = []
+    # thumbs_d_feats = []
+    # peace_h_feats  = []
+    # peace_d_feats  = []
+    # for i in range(len(thumbs_h)):
+    #     thumbs_h_feats.append(get_features(thumbs_h[i], 3))
+    #     peace_h_feats.append(get_features(peace_h[i], 3))
+    #     thumbs_d_feats.append(get_features(thumbs_d[i], 3))
+    #     peace_d_feats.append(get_features(peace_d[i], 3))
 
     drawn_feats = thumbs_d_feats.extend(peace_d_feats)
+    human_feats = thumbs_h_feats.extend(peace_h_feats)
         
     classifiers = [KNeighborsClassifier(), SVC(), LogisticRegression()] 
     
