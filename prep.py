@@ -1,6 +1,7 @@
 import os
 import random
 import numpy as np
+from collections import defaultdict
 from PIL import Image
 from glob import glob
 from scipy import ndimage
@@ -32,15 +33,18 @@ def get_features(img, sigma):
     """
 
     img = ndimage.gaussian_filter(img, 4)
-
-    return canny(img, sigma)
+    can = canny(img, sigma)
+    return can 
 
 def get_prediction(clf, trainX, trainY, testX, testY):
-    
+    trainX = trainX.reshape(len(trainX), -1)
+    testX = testX.reshape(len(testX), -1)
     accuracies = {}
     fold_acc = []
-    for train, test in StratifiedKFold(labels, n_folds = 4):
-        clf.fit(trainX[train])
+    for train, test in StratifiedKFold(trainY, n_folds = 4):
+        print trainX.shape
+        print trainY.shape
+        clf.fit(trainX[train], trainY[train])
         pred = clf.predict(trainX[test])
         fold_acc.append(accuracy_score(trainY[test], pred))
     
@@ -76,6 +80,10 @@ def main():
     humans = np.vstack((humans_t, humans_p))
     drawings = np.vstack((drawn_t, drawn_p))
     
+    # Shuffle data
+    np.random.shuffle(humans)
+    np.random.shuffle(drawings)
+
     # Get features and labels 
     h_feats = []
     h_labels = []
@@ -88,11 +96,24 @@ def main():
         d_feats.append(get_features(drawings[i][0], sigma=3))
         d_labels.append(drawings[i][1])
 
+    # Split data
+    dataSplit = len(humans)/5
+    h_train_x = np.array(h_feats[dataSplit:])
+    h_train_y = np.array(h_labels[dataSplit:])
+    h_test_x  = np.array(h_feats[:dataSplit])
+    h_test_y  = np.array(h_labels[:dataSplit])
+    d_train_x = np.array(d_feats[dataSplit:])
+    d_train_y = np.array(d_labels[dataSplit:])
+    d_test_x  = np.array(d_feats[:dataSplit])
+    d_test_y  = np.array(d_labels[:dataSplit])
+
     classifiers = [KNeighborsClassifier(), SVC(), LogisticRegression()] 
     
-    pred = {}
+    pred = defaultdict(lambda: defaultdict(list))
     for clf in classifiers:
-        pred[clf] = get_prediction(clf, h_feats, h_labels)
-
+        pred['humans'][clf] = get_prediction(clf, h_train_x, h_train_y, h_test_x, h_test_y)
+        pred['drawings'][clf] = get_prediction(clf, d_train_x, d_train_y, d_test_x, d_test_y)
+        
+    print pred
 
 main()
