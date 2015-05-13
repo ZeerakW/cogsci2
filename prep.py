@@ -18,12 +18,11 @@ DONE
 1. Extract canny features from training set (either human OR drawn) 
 2. Add labels to data
 3. Add cross validation
-
+4. Shuffle data
+5. Feed features to classifier(s) - Classifiers: KNearest, SVM, LogisticRegression, k_means
+6. Predict on the test set
 
 TODO
-1. Shuffle data
-2. Feed features to classifier(s) - Classifiers: KNearest, SVM, LogisticRegression, k_means
-3. Predict on the test set
 """
 
 def get_features(img, sigma):
@@ -53,7 +52,11 @@ def get_prediction(clf, trainX, trainY, testX, testY):
 
     return accuracies
 
-def main():
+def read_Data():
+    """
+    Reads in data and adds labels.
+    :return: Shuffled data
+    """
     # Get filenames
     thumbs_h = glob(os.getcwd() + '/data/thumbs_up/human/*')
     thumbs_d = glob(os.getcwd() + '/data/thumbs_up/Drawn/*')
@@ -81,6 +84,12 @@ def main():
     # Shuffle data
     np.random.shuffle(humans)
     np.random.shuffle(drawings)
+
+    return humans, drawings
+
+def main():
+    # Read in data
+    humans, drawings = read_Data()
 
     # Get features and labels 
     h_feats = []
