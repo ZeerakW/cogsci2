@@ -42,8 +42,6 @@ def get_prediction(clf, trainX, trainY, testX, testY):
     accuracies = {}
     fold_acc = []
     for train, test in StratifiedKFold(trainY, n_folds = 4):
-        print trainX.shape
-        print trainY.shape
         clf.fit(trainX[train], trainY[train])
         pred = clf.predict(trainX[test])
         fold_acc.append(accuracy_score(trainY[test], pred))
@@ -107,13 +105,15 @@ def main():
     d_test_x  = np.array(d_feats[:dataSplit])
     d_test_y  = np.array(d_labels[:dataSplit])
 
-    classifiers = [KNeighborsClassifier(), SVC(), LogisticRegression()] 
+    classifiers = {'KNN': KNeighborsClassifier(), 'SVM': SVC(kernel='linear'), 'LogReg': LogisticRegression()}
     
     pred = defaultdict(lambda: defaultdict(list))
-    for clf in classifiers:
-        pred['humans'][clf] = get_prediction(clf, h_train_x, h_train_y, h_test_x, h_test_y)
-        pred['drawings'][clf] = get_prediction(clf, d_train_x, d_train_y, d_test_x, d_test_y)
+    for clf in classifiers.keys():
+        pred['humans'][clf] = get_prediction(classifiers[clf], h_train_x, h_train_y, h_test_x, h_test_y)
+        pred['drawings'][clf] = get_prediction(classifiers[clf], d_train_x, d_train_y, d_test_x, d_test_y)
+
+    for key in pred.keys():
+        print pred[key]
         
-    print pred
 
 main()
