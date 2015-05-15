@@ -23,6 +23,8 @@ DONE
 6. Predict on the test set
 
 TODO
+7. Implement GridSearchCV in get_prediction
+8. Predict drawings on human trained classifier and vice versa
 """
 
 def get_features(img, sigma):
@@ -50,7 +52,7 @@ def get_prediction(clf, trainX, trainY, testX, testY):
     accuracies['folds'] = fold_acc
     accuracies['testSet'] = accuracy_score(testY, pred)
 
-    return accuracies
+    return accuracies, clf
 
 def read_Data():
     """
@@ -117,12 +119,24 @@ def main():
     classifiers = {'KNN': KNeighborsClassifier(), 'SVM': SVC(kernel='linear'), 'LogReg': LogisticRegression()}
     
     pred = defaultdict(lambda: defaultdict(list))
+    human_clfs = []
+    drawings_clfs = []
     for clf in classifiers.keys():
-        pred['humans'][clf] = get_prediction(classifiers[clf], h_train_x, h_train_y, h_test_x, h_test_y)
-        pred['drawings'][clf] = get_prediction(classifiers[clf], d_train_x, d_train_y, d_test_x, d_test_y)
-
-    for key in pred.keys():
-        print pred[key]
-        
+        pred['humans'][clf], h_clf = get_prediction(classifiers[clf], h_train_x, h_train_y, h_test_x, h_test_y)
+        human_clfs.append(h_clf)
+        pred['drawings'][clf], d_clf = get_prediction(classifiers[clf], d_train_x, d_train_y, d_test_x, d_test_y)
+        drawings_clfs.append(d_clf)
+    
+    # print "Using clf trained on humans to predict drawings"
+    # for clf in human_clfs:
+    #     pred = clf.predict(d_feats)
+    #     acc = accuracy_score(d_labels, pred)
+    #     print acc
+    #
+    # print "Using clf trained on drawings to predict humans"
+    # for clf in drawings_clfs:
+    #     pred = clf.predict(h_feats)
+    #     acc = accuracy_score(h_labels, pred)
+    #     print acc
 
 main()
