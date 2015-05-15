@@ -2,12 +2,12 @@ This is BibTeX, Version 0.99d (TeX Live 2014)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: abstract.aux
 The style file: apalike.bst
-Database file #1: reference.bib
+Database file #1: ../reference.bib
 Warning--empty chapter and pages in pew
 Warning--empty school in Rubine:1992:ARG:145726
 You've used 8 entries,
             1935 wiz_defined-function locations,
-            529 strings with 5069 characters,
+            529 strings with 5072 characters,
 and the built_in function-call counts, 3159 in all, are:
 = -- 302
 > -- 121
