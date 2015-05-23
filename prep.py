@@ -10,7 +10,7 @@ from skimage.feature import canny
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.cross_validation import StratifiedKFold
+# from sklearn.cross_validation import StratifiedKFold
 from sklearn.grid_search import GridSearchCV
 
 """
@@ -23,9 +23,9 @@ DONE
 5. Feed features to classifier(s) - Classifiers: KNearest, SVM, LogisticRegression, k_means
 6. Predict on the test set
 7. Implement GridSearchCV in get_prediction
+8. Predict drawings on human trained classifier and vice versa
 
 TODO
-8. Predict drawings on human trained classifier and vice versa
 """
 
 def get_features(img, sigma):
@@ -39,20 +39,11 @@ def get_features(img, sigma):
     return can 
 
 def get_prediction(clf, params, trainX, trainY, testX, testY):
-    # accuracies = {}
-    # fold_acc = []
-    # for train, test in StratifiedKFold(trainY, n_folds = 4):
-    #     clf.fit(trainX[train], trainY[train])
-    #     pred = clf.predict(trainX[test])
-    #     fold_acc.append(accuracy_score(trainY[test], pred))
     
-    mod_clf = GridSearchCV(clf, params)
+    mod_clf = GridSearchCV(clf, param_grid = params, cv = 5)
     mod_clf.fit(trainX, trainY)
     pred = mod_clf.predict(testX)
     acc = accuracy_score(testY, pred)
-
-    # accuracies['folds'] = fold_acc
-    # accuracies['testSet'] = accuracy_score(testY, pred)
 
     return acc, mod_clf
 
@@ -95,10 +86,6 @@ def read_Data():
 
     return humans, drawings
 
-def fit_pred(clf, testX, testY):
-    pred = clf.predict(testX)
-    return accuracy_score(testY, pred)
-
 def main():
     # Read in data
     humans, drawings = read_Data()
@@ -126,7 +113,8 @@ def main():
     d_test_x  = np.array(d_feats[:dataSplit])
     d_test_y  = np.array(d_labels[:dataSplit])
 
-    classifiers = {KNeighborsClassifier(): {'n_neighbors': [1,3,5,7,9]}, 
+    classifiers = {
+            KNeighborsClassifier(): {'n_neighbors': [3, 5, 7]}, 
             SVC(): {'C': [0.001, 0.01, 0.1, 1, 10], 'kernel': ['rbf', 'linear']}, 
             LogisticRegression(): {'C': [0.001, 0.01, 0.1, 1, 10]}
             }
@@ -136,38 +124,31 @@ def main():
     drawings_clfs  = []
     human_draw_acc = defaultdict(list) # train on Human, test on Draw
     draw_human_acc = defaultdict(list) # train on Draw, test on Human
-    # print d_test_x.shape
-    # print h_test_x.shape
 
     for clf in classifiers.keys():
         # Gridsearch and get prediction on human-human test and human trained clf on test set
         pred['humans'][clf], h_clf = get_prediction(clf, classifiers[clf], 
                                                     h_train_x, h_train_y, h_test_x, h_test_y)
         human_clfs.append(h_clf)
-        #human_draw_acc[clf] = fit_pred(h_clf, d_train_x, d_test_y)
         human_draw_acc[clf], _ = get_prediction(clf, classifiers[clf], 
                                                 h_train_x, h_train_y, d_test_x, d_test_y)
         
 
         pred['drawings'][clf], d_clf = get_prediction(clf, classifiers[clf], 
-                                                      d_train_x, d_train_y, d_test_x, d_test_y)
+                                                     d_train_x, d_train_y, d_test_x, d_test_y)
         drawings_clfs.append(d_clf)
-        # predict = d_clf.predict(h_test_x)
-        # draw_human_acc[clf] = accuracy_score(h_test_y, predict)
         draw_human_acc[clf], _ = get_prediction(clf, classifiers[clf], 
-                                                      d_train_x, d_train_y, h_test_x, h_test_y)
+                                                d_train_x, d_train_y, h_test_x, h_test_y)
 
-
-    
     print "Humans"
     for clf in pred['humans'].keys():
         print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['humans'][clf]))
-        print "\nClassification on drawings\n%s", str(human_draw_acc[clf])
-    
-    print "Drawings"
+        print "Classification accuracy on drawings\n%s" % str(human_draw_acc[clf])
+
+    print "\nDrawings"
     for clf in classifiers.keys():
         print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['drawings'][clf]))
-        print "\nClassification on humans\n%s" % str(draw_human_acc[clf])
+        print "Classification accuracy on humans\n%s\n" % str(draw_human_acc[clf])
     
 
 
