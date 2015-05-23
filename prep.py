@@ -39,8 +39,6 @@ def get_features(img, sigma):
     return can 
 
 def get_prediction(clf, params, trainX, trainY, testX, testY):
-    trainX = trainX.reshape(len(trainX), -1)
-    testX = testX.reshape(len(testX), -1)
     # accuracies = {}
     # fold_acc = []
     # for train, test in StratifiedKFold(trainY, n_folds = 4):
@@ -91,9 +89,13 @@ def read_Data():
     np.random.shuffle(humans)
     np.random.shuffle(drawings)
 
+    # for i in xrange(len(humans)): 
+    #     humans[i][0] = humans[i][0].ravel()
+    #     drawings[i][0] = drawings[i][0].ravel()
+
     return humans, drawings
 
-def fit_pred(clf, trainX, testX, testY):
+def fit_pred(clf, testX, testY):
     pred = clf.predict(testX)
     return accuracy_score(testY, pred)
 
@@ -108,9 +110,9 @@ def main():
     d_labels = []
 
     for i in range(len(humans)):
-        h_feats.append(get_features(humans[i][0], sigma=3))
+        h_feats.append(get_features(humans[i][0], sigma=3).ravel()) # Ravel to give correct dimensions for classifiers
         h_labels.append(humans[i][1])
-        d_feats.append(get_features(drawings[i][0], sigma=3))
+        d_feats.append(get_features(drawings[i][0], sigma=3).ravel())
         d_labels.append(drawings[i][1])
 
     # Split data
@@ -132,33 +134,40 @@ def main():
     pred           = defaultdict(lambda: defaultdict(list))
     human_clfs     = []
     drawings_clfs  = []
-    human_draw_acc = defaultdict(list)
-    draw_human_acc = defaultdict(list)
+    human_draw_acc = defaultdict(list) # train on Human, test on Draw
+    draw_human_acc = defaultdict(list) # train on Draw, test on Human
     # print d_test_x.shape
     # print h_test_x.shape
 
     for clf in classifiers.keys():
         # Gridsearch and get prediction on human-human test and human trained clf on test set
         pred['humans'][clf], h_clf = get_prediction(clf, classifiers[clf], 
-                h_train_x, h_train_y, h_test_x, h_test_y)
+                                                    h_train_x, h_train_y, h_test_x, h_test_y)
         human_clfs.append(h_clf)
-        human_draw_acc[clf] = fit_pred(h_clf, h_train_x, d_train_x, d_test_y)
+        #human_draw_acc[clf] = fit_pred(h_clf, d_train_x, d_test_y)
+        human_draw_acc[clf], _ = get_prediction(clf, classifiers[clf], 
+                                                h_train_x, h_train_y, d_test_x, d_test_y)
+        
 
-        pred['drawings'][clf], d_clf = get_prediction(clf, 
-                classifiers[clf], d_train_x, d_train_y, d_test_x, d_test_y)
+        pred['drawings'][clf], d_clf = get_prediction(clf, classifiers[clf], 
+                                                      d_train_x, d_train_y, d_test_x, d_test_y)
         drawings_clfs.append(d_clf)
         # predict = d_clf.predict(h_test_x)
         # draw_human_acc[clf] = accuracy_score(h_test_y, predict)
+        draw_human_acc[clf], _ = get_prediction(clf, classifiers[clf], 
+                                                      d_train_x, d_train_y, h_test_x, h_test_y)
+
+
     
-    # print "Humans"
-    # for clf in pred['humans'].keys():
-    #     print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['humans'][clf]))
-    #     print "\nClassification on drawings\n%s", str(human_draw_acc[clf])
-    #
-    # print "Drawings"
-    # for clf in classifiers.keys():
-    #     print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['drawings'][clf]))
-    #     print "\nClassification on humans\n%s" % str(draw_human_acc[clf])
+    print "Humans"
+    for clf in pred['humans'].keys():
+        print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['humans'][clf]))
+        print "\nClassification on drawings\n%s", str(human_draw_acc[clf])
+    
+    print "Drawings"
+    for clf in classifiers.keys():
+        print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['drawings'][clf]))
+        print "\nClassification on humans\n%s" % str(draw_human_acc[clf])
     
 
 
