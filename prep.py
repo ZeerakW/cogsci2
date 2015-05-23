@@ -11,6 +11,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.cross_validation import StratifiedKFold
+from sklearn.grid_search import GridSearchCV
 
 """
 DONE
@@ -37,22 +38,25 @@ def get_features(img, sigma):
     can = canny(img, sigma)
     return can 
 
-def get_prediction(clf, trainX, trainY, testX, testY):
+def get_prediction(clf, params, trainX, trainY, testX, testY):
     trainX = trainX.reshape(len(trainX), -1)
     testX = testX.reshape(len(testX), -1)
-    accuracies = {}
-    fold_acc = []
-    for train, test in StratifiedKFold(trainY, n_folds = 4):
-        clf.fit(trainX[train], trainY[train])
-        pred = clf.predict(trainX[test])
-        fold_acc.append(accuracy_score(trainY[test], pred))
+    # accuracies = {}
+    # fold_acc = []
+    # for train, test in StratifiedKFold(trainY, n_folds = 4):
+    #     clf.fit(trainX[train], trainY[train])
+    #     pred = clf.predict(trainX[test])
+    #     fold_acc.append(accuracy_score(trainY[test], pred))
     
-    pred = clf.predict(testX)
+    mod_clf = GridSearchCV(clf, params)
+    mod_clf.fit(trainX, trainY)
+    pred = mod_clf.predict(testX)
+    acc = accuracy_score(testY, pred)
 
-    accuracies['folds'] = fold_acc
-    accuracies['testSet'] = accuracy_score(testY, pred)
+    # accuracies['folds'] = fold_acc
+    # accuracies['testSet'] = accuracy_score(testY, pred)
 
-    return accuracies, clf
+    return acc, clf
 
 def read_Data():
     """
@@ -116,17 +120,29 @@ def main():
     d_test_x  = np.array(d_feats[:dataSplit])
     d_test_y  = np.array(d_labels[:dataSplit])
 
-    classifiers = {'KNN': KNeighborsClassifier(), 'SVM': SVC(kernel='linear'), 'LogReg': LogisticRegression()}
+    classifiers = {KNeighborsClassifier(): {'n_neighbors': [1,3,5,7,9]}, 
+            SVC(): {'C': [0.001, 0.01, 0.1, 1, 10], 'kernel': ['rbf', 'linear']}, 
+            LogisticRegression(): {'C': [0.001, 0.01, 0.1, 1, 10]}
+            }
     
     pred = defaultdict(lambda: defaultdict(list))
     human_clfs = []
     drawings_clfs = []
     for clf in classifiers.keys():
-        pred['humans'][clf], h_clf = get_prediction(classifiers[clf], h_train_x, h_train_y, h_test_x, h_test_y)
+        pred['humans'][clf], h_clf = get_prediction(clf, classifiers[clf], h_train_x, h_train_y, h_test_x, h_test_y)
         human_clfs.append(h_clf)
-        pred['drawings'][clf], d_clf = get_prediction(classifiers[clf], d_train_x, d_train_y, d_test_x, d_test_y)
+
+        pred['drawings'][clf], d_clf = get_prediction(clf, classifiers[clf], d_train_x, d_train_y, d_test_x, d_test_y)
         drawings_clfs.append(d_clf)
     
+    print "Humans"
+    for clf in classifiers.keys():
+        print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['humans'][clf]))
+    
+    print "Drawings"
+    for clf in classifiers.keys():
+        print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['drawings'][clf]))
+
     # print "Using clf trained on humans to predict drawings"
     # for clf in human_clfs:
     #     pred = clf.predict(d_feats)
