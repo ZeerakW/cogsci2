@@ -1,5 +1,4 @@
 import os
-import random
 import numpy as np
 from collections import defaultdict
 from PIL import Image
@@ -40,7 +39,7 @@ def get_features(img, sigma):
 
 def get_prediction(clf, params, trainX, trainY, testX, testY):
     
-    mod_clf = GridSearchCV(clf, param_grid = params, cv = 5)
+    mod_clf = GridSearchCV(clf, param_grid = params, cv = 5, scoring = "accuracy")
     mod_clf.fit(trainX, trainY)
     pred = mod_clf.predict(testX)
     acc = accuracy_score(testY, pred)
@@ -77,6 +76,7 @@ def read_Data():
     drawings = np.vstack((drawn_t, drawn_p))
     
     # Shuffle data
+    np.random.seed(62)
     np.random.shuffle(humans)
     np.random.shuffle(drawings)
 
@@ -133,22 +133,47 @@ def main():
         human_draw_acc[clf], _ = get_prediction(clf, classifiers[clf], 
                                                 h_train_x, h_train_y, d_test_x, d_test_y)
         
-
+        # Trained on Drawings
         pred['drawings'][clf], d_clf = get_prediction(clf, classifiers[clf], 
                                                      d_train_x, d_train_y, d_test_x, d_test_y)
         drawings_clfs.append(d_clf)
         draw_human_acc[clf], _ = get_prediction(clf, classifiers[clf], 
                                                 d_train_x, d_train_y, h_test_x, h_test_y)
 
-    print "Humans"
+    print 42 * "-" + "\nTest Scores\n" + 42 * "-"
+    for item in human_clfs:
+        print item
+        print "Best score", item.best_score_
+        print "Mean score", item.grid_scores_[1] 
+
+    print 42 * "-" + "\nHumans\n" + 42 * "-"
     for clf in pred['humans'].keys():
         print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['humans'][clf]))
-        print "Classification accuracy on drawings\n%s" % str(human_draw_acc[clf])
 
-    print "\nDrawings"
-    for clf in classifiers.keys():
+    print 42 * "-"+ "\nUsing Drawings as test set\n" + 42 * "-"
+    for clf in human_draw_acc.keys():
+        print "Classifier:\n%s\nScore on drawing set\n%s\n" % (str(clf), str(human_draw_acc[clf]))
+
+
+    print "\n\n\n\nClassifier trained on Drawings\n"
+    print 42 * "-" + "\nTest Scores\n" + 42 * "-"
+    for item in drawings_clfs:
+        print item
+        print "Best score", item.best_score_
+        print "Mean score", item.grid_scores_[1] 
+
+    print 42 * "-" + "\nHumans\n" + 42 * "-"
+    for clf in pred['drawings'].keys():
         print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['drawings'][clf]))
-        print "Classification accuracy on humans\n%s\n" % str(draw_human_acc[clf])
+
+    print 42 * "-"+ "\nUsing Drawings as test set\n" + 42 * "-"
+    for clf in draw_human_acc.keys():
+        print "Classifier:\n%s\nScore on drawing set\n%s\n" % (str(clf), str(draw_human_acc[clf]))
+
+    # print "\nDrawings"
+    # for clf in classifiers.keys():
+    #     print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['drawings'][clf]))
+    #     print "Classification accuracy on humans\n%s\n" % str(draw_human_acc[clf])
     
 
 
