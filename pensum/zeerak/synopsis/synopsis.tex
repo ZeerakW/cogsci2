@@ -1,0 +1,64 @@
+\documentclass[10pt, a4paper]{article}
+%\usepackage[margin=3m]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb}
+% \usepackage{minted}
+\usepackage{listingsutf8}
+\usepackage{url}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{adjustbox} % Used to scale size of tables
+
+\begin{document}
+\title{Cognitive Science 2 synopsis}
+\author{Zeerak Waseem Butt (csp265)}
+\date{\today}
+\maketitle
+\thispagestyle{empty}
+\newpage
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+\setcounter{page}{1}
+\section{Abstract}
+Given the increased use of digital media to communicate over time, it is necessary to create systems that can more accurately communicate as intended. In this project I will implement a machine learning system, that is trained on human hands gesturing 'thumbs up' and 'peace'. The system is tested on drawn images of the same gestures, thus indicating that further research into machine learning systems on drawn gestures can be used to preprogram human gestures in human computer interaction as well as computer mediated human interaction.\\
+
+Note: The code is implemented with Klaes Rasmussen, as we both wanted to do image recognition on gestures and it allows us to test on each others training set. The suggested improvements, if there is further research, is more likely to be robust if both systems are worked upon.
+\section{Introduction}
+
+\section{Previous Work}
+\section{Method}
+\section{Results}
+\begin{table}[h]
+  \centering
+  \resizebox{\textwidth}{!}{
+    \begin{tabular}{l|ccc}
+    Classifier          & Training Mean Accuracy & Std     & Parameters                     \\\hline
+    SVM                 & 0.6250                 & 0.16245 & 'kernel': 'linear', 'C': 0.001 \\
+    Logistic Regression & 0.62500                & 0.12472 & 'C': 0.01                      \\
+    K-Nearest Neighbour & 0.5000                 & 0.0000  & 'n\_neighbors': 5
+    \end{tabular}
+  }
+  \caption{Best training parameters \& results}
+  \label{fig:TrainAcc}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  % \resizebox{\textwidth}{!}{%
+    \begin{tabular}{l|cc}
+    Classifier          & Test Accuracy & Accuracy on Drawings \\\hline
+    SVM                 & 62.5\%        & 87.5\%               \\
+    Logistic Regression & 87.5\%        & 75.5\%               \\
+    K-Nearest Neighbour & 50\%          & 87.5\%              
+    \end{tabular}
+  % }
+  \caption{Accuracies on test set and different domain}
+  \label{fig:testDomainAcc}
+\end{table}
+\section{Discussion}
+
+\bibliography{reference}
+\bibliographystyle{apalike}
+\end{document}
