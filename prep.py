@@ -76,7 +76,7 @@ def read_Data():
     drawings = np.vstack((drawn_t, drawn_p))
     
     # Shuffle data
-    np.random.seed(62)
+    np.random.seed(42)
     np.random.shuffle(humans)
     np.random.shuffle(drawings)
 
@@ -162,11 +162,11 @@ def main():
         print "Best score", item.best_score_
         print "Mean score", item.grid_scores_[1] 
 
-    print 42 * "-" + "\nHumans\n" + 42 * "-"
+    print 42 * "-" + "\nDrawings\n" + 42 * "-"
     for clf in pred['drawings'].keys():
         print "Classifier:\n%s\nScore on test set:\n%s\n" % (str(clf), str(pred['drawings'][clf]))
 
-    print 42 * "-"+ "\nUsing Drawings as test set\n" + 42 * "-"
+    print 42 * "-"+ "\nUsing Humans as test set\n" + 42 * "-"
     for clf in draw_human_acc.keys():
         print "Classifier:\n%s\nScore on drawing set\n%s\n" % (str(clf), str(draw_human_acc[clf]))
 
