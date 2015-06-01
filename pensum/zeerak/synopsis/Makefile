@@ -10,7 +10,7 @@ pdf:
 	bibtex ${filename}||true 
 	pdflatex --shell-escape ${filename}
 	pdflatex --shell-escape ${filename}
-	open ${filename}.pdf
+	open -a Preview ${filename}.pdf
 
 clean:
 	rm -f ${filename}.{log,aux,out,bbl,blg,pyg,toc}
