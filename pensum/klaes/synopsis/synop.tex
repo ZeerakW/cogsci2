@@ -1,0 +1,102 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+
+\begin{document}
+
+\title{Cognitive Science 2 Synopsis \\ Automatic Human Gesture Recognition by Training on Cartoon Drawings}
+\author{Klaes Rasmussen (twb822)}
+\date{03 June 2015}
+\maketitle
+\pagebreak
+
+\tableofcontents
+
+\pagebreak
+
+\section{Introduction}
+\label{sec:introduction}
+
+Gesture recognition may now have most influence on how we use our smartphones, tablets or any other touch enabled device. It all came from somewhere, seemingly first described in detail in \cite{Rubine}. From here it has developed to other platforms, even some consumer computer software can now identify simple gestures performed in front of a camera. This may yet be just a few simple gestures, motivated by movement, such as changing to the next song in a playlist, but with technology improving at a rapid rate, and computing power even faster, recognising more complex human gestures will soon become everyday life for most of us. We would soon see many more applications such as those described in \cite{Wachs}.
+
+\vspace{0.5pc}
+
+Gesture recognition will be used for many things. An increasing amount of people are now using social media sites such as Facebook \linebreak \cite{pew}. These sites contain all sorts of information about their users. It is sure to be analysed, even the photographs. If they contain sign language or natural gestures, we can with gesture recognition gain even more information about the big data pools out there. And if we can identify gestures automatically using computers we can use that to understand humans, and maybe even human emotions \cite{kipp}. We can learn about human behaviour, maybe even learn to predict it. It could prove very useful to be able to make correct predictions of gestures, while only needing to train our models on artificially created data.
+
+\section{Motivation and Limitations}
+\label{sec:motivation}
+
+Labeled data is always hard to come by, if we can create it artificially, that data would be much easier to obtain. What is being presented in this synopsis can only give insight into the recognition of two still standing emblem gestures. But we already know that we can track heads and hands off of moving pictures \cite{rehm}, so even if only still frames are taken into consideration for this task, we can already extract those from moving pictures.
+
+We can teach a computer what communicative feedback looks like just by showing it drawings of the gestures. That could again be used in a Virtual Environment, or other human-computer interaction. It may even be used for a robot, such as teaching that to distinguish communicative feedback gestures, and use them to convey messages back to a human user in a seemingly more proficient manner \cite{allwood}. We can start to teach a computer about emotions through these scetches of gestures, as a further development of the work laid out by \cite{kipp}.
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Part 1 algorithm}
+\label{sec:part-1-algorithm}
+
+We first need to create an algorithm that will recognise drawn hand gestures, given a training set of drawn hand gestures.
+
+\begin{itemize}
+\item First create a set of drawings or cartoons, using the gestures we wish to identify.
+\item Label the training set accordingly.
+\item Get an idea of how to relate drawings of hands.
+\item Create an algorithm that can use that idea to find the relationship, and use that as a baseline for making comparisons.
+\item Find a suitable algorithm for making said comparisons.
+\item Split data set into a training and a test set.
+\item Train the algorithm on the training set.
+\item Fine tune the algorithm, using the training set.
+\end{itemize}
+
+After this we need to think out of the box for a bit. We need an algorithm that can take in a drawing and give feedback on what human hands are gesturing. Therefore, we need an extra training and test set. One training set consisting of labeled gestures made by human hands, and one which the algorithm does not know the labeling of. The tricky part is making sure that we have at least a small training data set available with human hands. This is only to be used for establishing a baseline of good parameter values used in recognising the gestures.
+
+
+\subsection{Part 2 algorithm}
+\label{sec:part-2-algorithm}
+
+Now we are ready to relate the drawn hand gestures with actual human made hand gestures. The process goes as follows:
+
+\begin{itemize}
+\item Find a way to relate the two.
+\item Using a Canny edge detector works well for this, it abstracts the human hands and the drawn hands into look-alike outlines of hands.
+\item Fine tune the Canny edge detector to exclude unwanted features, yet keep all identifying features.
+\item Find an algorithm that best determines the relationship between the drawn and the human hands.
+\item A grid search was used to test wether a KNN-classifier, a Logistic Regression or a SVC would work the best.
+\item As Logistic Regression had the best results, use that to classify our human hands, when the model is only trained on drawn hands.
+\end{itemize}
+
+It was found that a higher value of sigma was needed for determining human hand gesture shapes, than it was for drawings. There is a lot more noise when looking at pictures of human hands, and a higher value of sigma filters out a larger amount of that noise.
+
+\section{Results}
+\label{sec:results}
+
+The dataset ended up being very small, consisting of only 40 drawn images, and 40 images of human hands. Of these, 20 images of each represented the emblematic gesture of 'thumbs up' and the other 20 represented a 'peace' symbol (a V shape made with the index and middle finger). However, even with this small amount of data, it was possible to get statistically significant results. After some extra tweaking of the sigma parameter was implemented, the accuracy shot up to 1.0. This is with however only on a test set of 8 images (32 training, 8 test images). So it may be biased. However, it still shows that it is possible to make such predictions. Even with the KNN-classifier, and the SVC, with the same parameter settings, they both had 62.5\% accuracy in the actual test. When looking at the accuracy of traing data with training data, there is 97\% accuracy for Logistic Regression, although the other two are almost down to a 50/50 chance.
+
+
+\section{Analysis}
+\label{sec:analysis-1}
+
+This all suggests that it is possible to make gesture predictions of human hand gestures, based solely on data of drawn features. It was unexpected that it was possible to produce such great results, but some of it is probably a fluke because of the small dataset. However, it still leaves the subject open to more investigation, and it would certainly make creating new models a lot easier. Instructing a computer in hand gestures, only by using drawings, or otherwise even computer generated data, that would be a great advancement.
+
+\vspace{0.5pc}
+
+As \cite{ruiter} describes, there are many modalities needed to process what we humans think and feel. Further development of gesture recognition may be able to help understand at least one of those. But this same type of recognition has already been made with OCR, recognising the written word with the help of a computer. That is already one more modality. If we can start to use imagery to interpret both words written by man in todays day, and maybe writings or drawings of gestures on cave walls from ancient times. Then we can really see how wrong or right \cite{ekman} was in thinking that emotions are displayed in the same way across the world, and across time.
+
+\vspace{0.5pc}
+
+In the future, even more of our communication will be conducted online \cite{pew}. More and more areas of our lives will also become online endeavours. Even a lot of our learning experience is already moving in that direction \cite{lancaster}. Not only medical students, but also every day life at university involves a lot of research conducted online. Helping ourselves to become better learners, or helping a computer become a better teacher, through the research done by \cite{wing}, will all help in advancing our society into the new tomorrow.
+
+
+
+\bibliography{reference}
+\bibliographystyle{apalike}
+\nocite{*}
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
