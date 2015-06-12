@@ -1,0 +1,7 @@
+\contentsline {section}{\numberline {1}Introduction}{3}
+\contentsline {section}{\numberline {2}Motivation and Limitations}{3}
+\contentsline {section}{\numberline {3}Method}{4}
+\contentsline {subsection}{\numberline {3.1}Part 1 algorithm}{4}
+\contentsline {subsection}{\numberline {3.2}Part 2 algorithm}{4}
+\contentsline {section}{\numberline {4}Results}{5}
+\contentsline {section}{\numberline {5}Analysis}{5}

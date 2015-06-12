@@ -97,9 +97,9 @@ def main():
     d_labels = []
 
     for i in range(len(humans)):
-        h_feats.append(get_features(humans[i][0], sigma=3).ravel()) # Ravel to give correct dimensions for classifiers
+        h_feats.append(get_features(humans[i][0], sigma=22).ravel()) # Ravel to give correct dimensions for classifiers
         h_labels.append(humans[i][1])
-        d_feats.append(get_features(drawings[i][0], sigma=3).ravel())
+        d_feats.append(get_features(drawings[i][0], sigma=10).ravel())
         d_labels.append(drawings[i][1])
 
     # Split data
